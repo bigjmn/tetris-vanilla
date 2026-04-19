@@ -1,0 +1,45 @@
+
+<body>
+
+
+<div class="constrain">
+  <h2>Join a room</h2>
+
+
+
+
+    <form class="" action="/join" method="post">
+      <div class="fieldholder">
+      <label for="joincode">Room:</label>
+      <input id='joincode' type="text" name="roomcode" placeholder="Enter room code"  autocomplete="off" value={{codefill}}>
+
+
+      <label for='joinusername'>Name:</label>
+      <input id='joinusername' placeholder="Pick a username" type="text" maxlength="12" name="username" value={{userfill}}>
+
+
+
+
+      <button class='roominput'>Join Room</button>
+      <div class="errholder">
+        <p>{{errmessage}}</p>
+
+      </div>
+
+
+
+</div>
+    </form>
+
+
+
+
+
+  <div class="protip">
+    <h3>Pro Tip:</h3>
+    <p>Don't get too creative with your username. Pick something that easily identifies you to your teammates. Your name, for example.</p>
+
+  </div>
+
+</div>
+</body>

@@ -1,0 +1,157 @@
+<body>
+  <div id="gamewrapper">
+
+
+  <div class="topbar">
+    <div id="teamnameholder">
+
+    </div>
+
+    <div id="roomcode">
+
+    </div>
+
+
+  </div>
+
+  <div id='fullgame'>
+    <div id="leftpanel">
+      <div id='nameholder'></div>
+
+    </div>
+
+    <div id="canvasholder">
+      <div id="waitcard" class='centerlayer'>
+        <h1>Get Ready!</h1>
+        <p>You're about to join a game already in progress</p>
+
+
+      </div>
+      <div id='optionsholder' class='centerlayer'>
+
+        <div class="modeholder">
+          <h4>Game Mode</h4>
+
+          <div class="modenameholder">
+
+
+
+          <button class='modeswitch' id='prevmode' type="button" name="button"><i class="fas fa-angle-left"></i></button>
+          <div class="namefit">
+            <p id='modename0' class='modename'>Classic Mode</p>
+            <p id='modename1' class='modename'>Self View</p>
+            <p id='modename2' class='modename'>Buddy View</p>
+
+          </div>
+
+
+
+          <button class='modeswitch' id='nextmode' type="button" name="button"><i class="fas fa-angle-right"></i></button>
+          </div>
+          <div class="moderulesholder">
+
+
+          <p id='moderules0' class='moderules'>Players can see all controls. Don't pick this one.</p>
+          <p id='moderules1' class='moderules'>Players can see only their own controls.</p>
+          <p id='moderules2' class='moderules'>Players can see only their teammates controls.</p>
+          </div>
+
+
+
+        </div>
+
+        <div class="modeholder">
+          <h4>Jump-Ins</h4>
+
+          <div class="modenameholder">
+
+
+
+          <button class='togglejump' type="button" name="button"><i class="fas fa-angle-left"></i></button>
+          <div class="namefit">
+            <p id='jumpon' class='jumptype'>On</p>
+            <p id='jumpoff' class='jumptype'>Off</p>
+
+          </div>
+
+
+
+          <button class='togglejump' type="button" name="button"><i class="fas fa-angle-right"></i></button>
+          </div>
+          <div class="jumprulesholder">
+
+
+          <p id='jumpin' class='jumprules'>Players can join mid-game.</p>
+          <p id='nojumpin' class='jumprules'>Player's can't join once the game has started</p>
+          </div>
+
+
+
+        </div>
+
+        <div class="hostzone">
+          <h3 id='waitmessage'>Waiting for the host to start the game</h3>
+          <button id='hostbutton' type="button" name="button">Start the game!</button>
+
+        </div>
+
+
+
+
+      </div>
+      <canvas id='canvas' class='' width='300px' height='540px' style='border:1px solid'></canvas>
+      <div id="gameover" class='centerlayer'>
+        <h1>GAME OVER</h1>
+        <p id='cantsubmit'>Team has less than 3 players!</p>
+        <button id='sendscore' class='centerbutton' type="button" name="button">Submit Score</button>
+
+        <p>Returning to game room in <span id='secsleft'>10</span> </p>
+
+
+      </div>
+
+    </div>
+
+    <div id="rightpanel">
+
+      <div class="statbox" id='previewholder'>
+        <canvas id="previewcanvas" width="150" height="120"></canvas>
+
+      </div>
+
+      <div class="statbox" id='levelholder'>
+        <p>Level:</p>
+        <h2 id='levelstat'>0</h2>
+
+      </div>
+      <div class="statbox" id='linesholder'>
+        <p>Lines Cleared:</p>
+        <h2 id='linescleared'>0</h2>
+
+
+      </div>
+      <div class="statbox" id='penaltiesholder'>
+        <p>Penalties</p>
+        <h2 id='penalties'>0</h2>
+
+      </div>
+      <div class="statbox" id='soundholder'>
+        <p>SFX</p>
+        <button id='mutebutton' type="button" name="button"><i style='font-size:30px' class='fas'>&#xf028;</i></button>
+
+      </div>
+    </div>
+
+
+
+  </div>
+  <div id="usernameholder">{{username}}
+
+  </div>
+
+  </div>
+
+  <script src='/javascripts/index.js' type='module'>
+
+  </script>
+</body>

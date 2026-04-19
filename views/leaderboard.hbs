@@ -1,0 +1,83 @@
+<body>
+  <div class="leaderconstrain">
+
+
+  <h1>Leaderboard</h1>
+  <p>Welcome to the leaderboard! Not all Tetris Buddies games are created equal,
+  so use the filters to check out the top teams based on game type and team size.
+ Team size is based on the smallest number of players over the course of the game (e.g. a size of 5 means there were never fewer than 5 players going at once.) </p>
+
+  <form id='myformid' class="" action="/leaderboard" method="post">
+    <label for="sizefilter">Min. Team Size:
+    <select id="sizefilter" class='boardfilter' name="maxplayers" data-sizefill={{sizefill}}>
+
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+
+
+    </select>
+    </label>
+    <label for="modefilter">Game Mode:
+    <select id="modefilter" class='boardfilter' data-modefill="{{modefill}}" name="gamemode" >
+      <option class='modetype' value='any'>Any</option>
+      <option class='modetype' value="Classic Mode">Classic Mode</option>
+      <option class='modetype' value="Self View">Self View</option>
+      <option class='modetype' value="Buddy View">Buddy View</option>
+
+
+    </select>
+    </label>
+    <button type="submit" name="button">Apply Filters <i class="fa fa-angle-double-right"></i></button>
+  </form>
+
+  <table>
+    <tr>
+      <th>Rank:</th>
+      <th>Team Name:</th>
+      <th>Team Size</th>
+      <th>Game Mode</th>
+      <th>Lines Cleared:</th>
+
+
+    </tr>
+    {{#each leaders}}
+    <tr>
+      <td class='ind'>{{{ @index }}}</td>
+      <td>{{this.name}}</td>
+      <td>{{this.size}}</td>
+      <td>{{this.mode}}</td>
+      <td>{{this.lines}}</td>
+    </tr>
+    {{/each}}
+
+
+
+
+  </table>
+
+  </div>
+  <script type="text/javascript">
+
+  $('#sizefilter').val($('#sizefilter').attr('data-sizefill'))
+  $('#modefilter').val($('#modefilter').attr('data-modefill'))
+  let inds = document.getElementsByClassName('ind')
+  for (let i=0;i<5;i++){
+    inds[i].innerHTML = i+1
+  }
+
+
+
+
+
+  </script>
+
+  <script src='/javascripts/leaderboard.js'>
+
+  </script>
+</body>

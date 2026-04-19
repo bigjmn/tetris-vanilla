@@ -1,0 +1,45 @@
+
+<body>
+
+
+<div class="constrain">
+  <h2>Create a room</h2>
+
+
+
+
+    <form class="" action="/create" method="post">
+      <div class="fieldholder">
+      <label for="teamname">Team Name:</label>
+      <input id='teamname' type="text" maxlength="18" name="roomname" placeholder="Name your team!"  autocomplete="off" >
+
+
+      <label for='createusername'>Username:</label>
+      <input id='createusername' placeholder="Pick a username" type="text" name="username" autocomplete="off" maxlength="12" value={{userfill}}>
+
+
+
+
+      <button class='roominput'>Create Game</button>
+      <div class="errholder">
+        <p>{{errmessage}}</p>
+
+      </div>
+
+
+
+</div>
+    </form>
+
+
+
+
+
+  <div class="protip">
+    <h3>Pro Tip:</h3>
+    <p>High score submissions will use your team name, so make it count.</p>
+
+  </div>
+
+</div>
+</body>
