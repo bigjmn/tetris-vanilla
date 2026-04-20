@@ -264,9 +264,9 @@ socket.on('takemove', (data) => {
 
   console.log(data.move)
   gameState.piece.move(gameState.board.board, data.move)
-  $(data.turngreen).css('background-color', '#1ae53e')
+  $(data.turngreen).css('background-color', '#23a559')
   setTimeout(() => {
-    $(data.turngreen).css('background-color', 'white')
+    $(data.turngreen).css('background-color', '')
   }, 200)
   console.log(gameState.piece)
 
@@ -279,10 +279,9 @@ socket.on('takemove', (data) => {
 
 socket.on('illegal', (data) => {
   gameState.sounds.soundoff('badauto')
-  $(data.turnred).css('background-color','red')
+  $(data.turnred).css('background-color', '#f23f42')
   setTimeout(() => {
-    $(data.turnred).css('background-color','white')
-
+    $(data.turnred).css('background-color', '')
   }, 200)
 
 })

@@ -2,24 +2,26 @@
 <html>
   <head>
     <title>{{title}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="/stylesheets/styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Abril+Fatface|Poppins">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap">
     <script src="https://kit.fontawesome.com/3c6b1f9a03.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
   </head>
   <body>
     <nav class='navbar'>
-  <ul>
-    <li><a class="active" href="/">Home</a></li>
-    <li><a href="/leaderboard">Leaderboard</a></li>
-    <li><a href="/darules">Da Rules</a></li>
-    <li><a href="/about">About</a></li>
-  </ul>
-
-</nav>
+      <ul>
+        <li class="title"><a href="/">Tetris Buddies</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/leaderboard">Leaderboard</a></li>
+        <li><a href="/darules">Da Rules</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
 
     {{{body}}}
   </body>

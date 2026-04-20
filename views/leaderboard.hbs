@@ -36,16 +36,18 @@
     <button type="submit" name="button">Apply Filters <i class="fa fa-angle-double-right"></i></button>
   </form>
 
+  <div class="table-card">
   <table>
+    <thead>
     <tr>
-      <th>Rank:</th>
-      <th>Team Name:</th>
+      <th>Rank</th>
+      <th>Team Name</th>
       <th>Team Size</th>
       <th>Game Mode</th>
-      <th>Lines Cleared:</th>
-
-
+      <th>Lines Cleared</th>
     </tr>
+    </thead>
+    <tbody>
     {{#each leaders}}
     <tr>
       <td class='ind'>{{{ @index }}}</td>
@@ -55,11 +57,9 @@
       <td>{{this.lines}}</td>
     </tr>
     {{/each}}
-
-
-
-
+    </tbody>
   </table>
+  </div>
 
   </div>
   <script type="text/javascript">
