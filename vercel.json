@@ -1,5 +1,13 @@
 {
   "version": 2,
-  "builds": [{ "src": "server.js", "use": "@vercel/node" }],
-  "routes": [{ "src": "/(.*)", "dest": "server.js" }]
+  "builds": [
+    { "src": "public/**", "use": "@vercel/static" },
+    { "src": "server.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/stylesheets/(.*)", "dest": "/public/stylesheets/$1" },
+    { "src": "/javascripts/(.*)", "dest": "/public/javascripts/$1" },
+    { "src": "/sounds/(.*)", "dest": "/public/sounds/$1" },
+    { "src": "/(.*)", "dest": "server.js" }
+  ]
 }
