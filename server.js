@@ -29,7 +29,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({secret: "Shh, its a secret!"}));
+app.use(session({
+  secret: process.env.SESSION_SECRET || "Shh, its a secret!",
+  resave: false,
+  saveUninitialized: false,
+}));
 const middlewares = require('./middlewares/middlewares.js')
 var lobbylist = require('./middlewares/lobbylist')
 
