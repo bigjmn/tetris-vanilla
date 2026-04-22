@@ -4,17 +4,26 @@ import {Board} from './board.js'
 import {maskControls} from './utils.js'
 import {Soundboard} from './makeaudio.js'
 
+console.log('[DEBUG] index.js module executing, connecting to:', window.location.href)
 const socket = io.connect(window.location.href)
 socket.on('connect', () => {
+  console.log('[DEBUG] socket connected, id:', socket.id)
   let username = document.getElementById('usernameholder').innerHTML
+  console.log('[DEBUG] username from DOM:', JSON.stringify(username))
   socket.emit('giveusername', {username:username})
 })
+socket.on('connect_error', (err) => {
+  console.error('[DEBUG] socket connect_error:', err.message)
+})
 socket.on('pleasewait', () => {
+  console.log('[DEBUG] pleasewait received')
   $('#waitcard').show()
 })
 socket.on('optionpage', () => {
+  console.log('[DEBUG] optionpage received')
   $('#waitcard').hide()
   $('#optionsholder').show()
+  console.log('[DEBUG] optionsholder display after show():', document.getElementById('optionsholder').style.display)
 })
 //key event listeners. not bound yet, just defined
 const handleKey = (e) => {
@@ -69,11 +78,13 @@ $('.togglejump').on('click', () => {
 })
 
 socket.on('takecode', (data) => {
+  console.log('[DEBUG] takecode received:', data)
   $('#roomcode').text(`Room Code: ${data.roomcode}`)
   $('#teamnameholder').text(`Team: ${data.roomname}`)
 })
 
 socket.on('takemode', (data) => {
+  console.log('[DEBUG] takemode received:', data)
   $('.modename').hide()
   $('.moderules').hide()
   $('.jumptype').hide()
@@ -212,17 +223,15 @@ const resetgame = () => {
 socket.on('welcome', () => {socket.emit('refresh') })
 
 socket.on('takeplayers', (data) => {
+  console.log('[DEBUG] takeplayers received:', data, 'my socket.id:', socket.id)
   var namelist = playertags(data.namelist, socket.id)
-
-
-
   $('#nameholder').html(namelist)
-
 })
 socket.on('removeboy', (data) => {
   $(data.oldid).remove()
 })
 socket.on('takehost', () => {
+  console.log('[DEBUG] takehost received')
   $('#waitmessage').hide()
   $('#hostbutton').show()
 })

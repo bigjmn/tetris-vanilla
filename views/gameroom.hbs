@@ -151,7 +151,13 @@
 
   </div>
 
-  <script src='/javascripts/index.js' type='module'>
-
+  <script>
+    // Debug: catch any require() calls and show a real stack trace
+    window.require = function(mod) {
+      console.error('[DEBUG] require() called with:', mod);
+      console.trace('[DEBUG] require stack trace');
+    };
+    console.log('[DEBUG] gameroom page loaded, io available:', typeof io, '$ available:', typeof $);
   </script>
+  <script src='/javascripts/index.js' type='module'></script>
 </body>
