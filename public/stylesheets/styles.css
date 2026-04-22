@@ -617,14 +617,14 @@ tbody tr:hover td { background: var(--bg-elevated); }
   height: 100%;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  overflow: hidden;
   flex-shrink: 0;
   background: var(--bg-tertiary);
 }
 
 /* Centerlayer: base style for all overlay divs inside canvasholder */
 .centerlayer {
-  width: 100%;
+  width: 300px;
+  min-height: 100%;
   box-sizing: border-box;
 }
 
@@ -645,6 +645,8 @@ tbody tr:hover td { background: var(--bg-elevated); }
   display: none;
   padding: 60px 24px 40px;
   text-align: center;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
 }
 #waitcard h1 {
   font-size: 1.7em;
@@ -666,7 +668,8 @@ tbody tr:hover td { background: var(--bg-elevated); }
   display: none;
   padding: 20px 16px 16px;
   overflow-y: auto;
-  height: 540px;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
 }
 
 .modeholder {
@@ -797,7 +800,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
   text-align: center;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
   z-index: 10;
 }
 #gameover h1 {
