@@ -540,7 +540,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
 /* ---- LEFT PANEL (player list) ---- */
 #leftpanel {
   width: 190px;
-  height: 100%;
+  height: 540px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -614,7 +614,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
 #canvasholder {
   position: relative;
   width: 300px;
-  height: 100%;
+  height: 540px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   flex-shrink: 0;
@@ -624,7 +624,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
 /* Centerlayer: base style for all overlay divs inside canvasholder */
 .centerlayer {
   width: 300px;
-  min-height: 100%;
+  min-height: 540px;
   box-sizing: border-box;
 }
 
@@ -795,6 +795,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
   left: 50%;
   transform: translate(-50%, -50%);
   width: 265px;
+  min-height: 0;
   padding: 28px 24px;
   background: var(--bg-secondary);
   border: 1px solid var(--border-strong);
@@ -837,7 +838,7 @@ tbody tr:hover td { background: var(--bg-elevated); }
 /* ---- RIGHT PANEL (stats) ---- */
 #rightpanel {
   flex: 1;
-  height: 100%;
+  height: 540px;
   display: flex;
   flex-direction: column;
   gap: 6px;

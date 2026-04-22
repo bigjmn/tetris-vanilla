@@ -100,7 +100,7 @@ function mutetoggle(){
   mutebutton.innerHTML = gameState.sounds.muted ? muteicon : soundicon
   mutebutton.blur()
 }
-mutebutton.addEventListener('click', mutetoggle)
+if (mutebutton) mutebutton.addEventListener('click', mutetoggle)
 //tetris gamestate
 var gameState = {
   canvas : document.getElementById('canvas'),
