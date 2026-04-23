@@ -913,14 +913,11 @@ tbody tr:hover td { background: var(--bg-elevated); }
   color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
-  font-size: 24px;
+  font-size: 30px;
   transition: color 0.15s ease;
   margin-top: 4px;
 }
 #mutebutton:hover { color: var(--text-primary); }
-
-/* Touch controls (shown on mobile via .playing class) */
-#touchcontrols { display: none; }
 
 /* ================================================
    UTILITIES / HIDDEN ELEMENTS
@@ -1003,8 +1000,8 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   }
 
   .topbar {
+    flex: none;
     max-width: 100%;
-    flex-shrink: 0;
     padding: 6px 12px;
   }
 
@@ -1018,18 +1015,18 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     align-items: stretch;
   }
 
-  /* Reorder: stats → canvas → touch controls → names */
+  /* Reorder: stats → canvas → names (with own-card controls) */
   #rightpanel {
     order: 1;
+    flex: none;
     width: 100%;
     flex-direction: row;
     flex-wrap: nowrap;
-    height: auto;
-    flex-shrink: 0;
-    overflow-x: auto;
+    height: 54px;
+    overflow: hidden;
     gap: 4px;
+    align-items: stretch;
   }
-  #rightpanel::-webkit-scrollbar { display: none; }
 
   #canvasholder {
     order: 2;
@@ -1044,22 +1041,19 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     overflow: hidden;
   }
 
-  #touchcontrols { order: 3; }
-
   #leftpanel {
-    order: 4;
+    order: 3;
+    flex: none;
     width: 100%;
     height: auto;
-    max-height: none;
-    flex-direction: row;
+    max-height: 28vh;
+    flex-direction: column;
     flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    flex-shrink: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
     gap: 4px;
     padding-bottom: 2px;
   }
-  #leftpanel::-webkit-scrollbar { display: none; }
 
   /* Canvas scaling: keeps 300x540 drawing buffer, CSS scales display */
   #canvas {
@@ -1079,80 +1073,81 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
     overflow-y: auto;
   }
 
-  /* Stat boxes in horizontal row above canvas */
+  /* Stat boxes: compact single-line strip */
   .statbox {
     flex: 1;
     min-width: 0;
-    padding: 5px 8px;
-  }
-  .statbox p { font-size: 0.6em; }
-  .statbox h2 { font-size: 1.3em; }
-
-  #previewholder {
-    flex: 0 0 auto;
-    min-width: 64px;
-    padding: 4px;
-  }
-  #previewholder canvas { max-width: 64px; height: auto; display: block; }
-  #soundholder { flex-direction: row; gap: 6px; }
-
-  /* Touch controls */
-  #gamewrapper.playing #touchcontrols {
+    padding: 0 6px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
   }
-  #touchcontrols {
-    flex-shrink: 0;
-    padding: 3px 0;
-  }
-  .touch-row {
+  .statbox p { font-size: 0.5em; line-height: 1.2; margin: 0; text-align: center; white-space: nowrap; }
+  .statbox h2 { font-size: 1.1em; line-height: 1.1; text-align: center; }
+
+  #previewholder {
+    flex: 0 0 54px;
+    padding: 4px;
+    overflow: hidden;
     display: flex;
-    gap: 6px;
+    align-items: center;
     justify-content: center;
   }
-  .touchbtn {
-    flex: 1;
-    max-width: 90px;
-    height: 48px;
-    font-size: 22px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-md);
-    color: var(--text-primary);
+  #previewholder canvas {
+    width: 50px;
+    height: 40px;
+    display: block;
+    flex-shrink: 0;
+  }
+  #soundholder {
+    flex: 0 0 48px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+  }
+  #mutebutton { font-size: 1.1em; padding: 0; margin: 0; }
+  #mutebutton i { font-size: 1em !important; }
+
+  /* Name cards: grid — own card full-width row, others fill 2 columns */
+  #nameholder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 100%;
+  }
+
+  /* Own card: spans both columns, with tappable controls */
+  .playertag:first-child {
+    grid-column: 1 / -1;
+  }
+  .playertag:first-child .control,
+  .playertag:first-child .controlmask {
+    font-size: 26px;
+    line-height: 1.9;
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
-    transition: background 0.1s ease, border-color 0.1s ease;
   }
-  .touchbtn:active {
-    background: var(--accent-dim);
-    border-color: var(--accent);
+  .playertag:first-child .controlmask:active,
+  .playertag:first-child .control:active {
+    opacity: 0.5;
   }
-  .touch-wide { flex: 2; max-width: 180px; font-size: 16px; }
 
-  /* Name cards: own card full, others compact */
-  #nameholder {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 4px;
-    width: auto;
-  }
-  .playertag:first-child {
-    min-width: 130px;
-    flex: 0 0 130px;
-  }
+  /* Other cards: compact, show controls */
   .playertag:not(:first-child) {
-    min-width: 54px;
-    flex: 0 0 54px;
-    padding: 4px 5px;
+    padding: 4px 6px;
   }
-  .playertag:not(:first-child) .controltypes { display: none; }
   .playertag:not(:first-child) .playername {
-    font-size: 0.7em;
-    margin-bottom: 0;
+    font-size: 0.75em;
+    margin-bottom: 2px;
+  }
+  .playertag:not(:first-child) .control,
+  .playertag:not(:first-child) .controlmask {
+    font-size: 13px;
+    line-height: 1.5;
   }
 
   /* Other pages */
@@ -1165,6 +1160,7 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
 
 @media (max-width: 400px) {
   .nav-links li a { padding: 10px 16px; font-size: 0.88em; }
-  .touchbtn { height: 42px; font-size: 20px; }
   .nav-brand a { font-size: 0.9em !important; }
+  .playertag:first-child .control,
+  .playertag:first-child .controlmask { font-size: 22px; line-height: 1.8; }
 }

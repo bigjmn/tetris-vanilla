@@ -11,9 +11,9 @@ export function playertags(users, playerid){
         <div class='control' id=${item[1]}right>&#11157</div>
       </div>
       <div class='playercontrolmask' id=${item[1]}controlmask>
-        <div class='controlmask'>?</div>
-        <div class='controlmask'>?</div>
-        <div class='controlmask'>?</div>
+        <div class='controlmask' data-move='left'>?</div>
+        <div class='controlmask' data-move='rotate'>?</div>
+        <div class='controlmask' data-move='right'>?</div>
 
       </div>
       </div>

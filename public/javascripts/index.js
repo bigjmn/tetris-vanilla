@@ -66,19 +66,32 @@ const unbindKeys = () => {
   window.removeEventListener('keydown', handleKey)
 }
 
-const mobileControls = [
-  ['btn-left', 'left'], ['btn-rotate', 'rotate'], ['btn-right', 'right'],
-  ['btn-down', 'down'], ['btn-drop', 'autodrop'],
-]
-mobileControls.forEach(([id, move]) => {
-  const btn = document.getElementById(id)
-  if (!btn) return
-  btn.addEventListener('touchstart', (e) => {
-    e.preventDefault()
-    socket.emit('move', {move})
-  }, {passive: false})
-  btn.addEventListener('click', () => socket.emit('move', {move}))
-})
+// Track which moves the current player is responsible for
+const myControls = {left: false, rotate: false, right: false}
+
+// Card-based touch controls: delegate on #nameholder (exists in static HTML)
+document.getElementById('nameholder').addEventListener('touchstart', (e) => {
+  if (!gameState.playing) return
+  const slotMoves = ['left', 'rotate', 'right']
+  // Visible control slot (own playercontrols)
+  for (const move of slotMoves) {
+    const el = document.getElementById(socket.id + move)
+    if (el && (e.target === el || el.contains(e.target))) {
+      e.preventDefault()
+      socket.emit('move', {move: myControls[move] ? move : 'autodrop'})
+      return
+    }
+  }
+  // Masked control slot (own controlmask)
+  const maskContainer = document.getElementById(socket.id + 'controlmask')
+  if (maskContainer && maskContainer.contains(e.target)) {
+    const move = e.target.dataset.move
+    if (move) {
+      e.preventDefault()
+      socket.emit('move', {move: myControls[move] ? move : 'autodrop'})
+    }
+  }
+}, {passive: false})
 
 $('#prevmode').on('click', () => {
   socket.emit('changemode', {type:1})
@@ -118,8 +131,8 @@ socket.on('takemode', (data) => {
 })
 
 const mutebutton = document.querySelector('#mutebutton')
-const soundicon = "<i style='font-size:30px' class='fas'>&#xf028;</i>"
-const muteicon = "<i style='font-size:30px' class='fas fa-volume-mute'></i>"
+const soundicon = "<i class='fas'>&#xf028;</i>"
+const muteicon = "<i class='fas fa-volume-mute'></i>"
 function mutetoggle(){
   gameState.sounds.muted = !gameState.sounds.muted
   mutebutton.innerHTML = gameState.sounds.muted ? muteicon : soundicon
@@ -229,7 +242,6 @@ const resetgame = () => {
   $('.playercontrols').hide()
   $('.playercontrolmask').hide()
   $('#sendscore').html('Submit Score')
-  document.getElementById('gamewrapper').classList.remove('playing')
   socket.emit('resetlobby')
 
 
@@ -266,7 +278,6 @@ socket.on('prepgame', (data) => {
   $('#canvas').show()
   console.log('starting')
   bindKeys()
-  document.getElementById('gamewrapper').classList.add('playing')
   gameState.upcoming = data.firstpiece
   gameState.start()
 
@@ -319,14 +330,15 @@ socket.on('takeControls', (data) => {
       if (item[1][control]){
         var idtoshow = item[0]+control
         $('#'+idtoshow).css('visibility', 'visible')
-
       }
-
-
     });
-
-
   });
+  const myInfo = infos.find(item => item[0] === socket.id)
+  if (myInfo) {
+    myControls.left = !!myInfo[1].left
+    myControls.rotate = !!myInfo[1].rotate
+    myControls.right = !!myInfo[1].right
+  }
   socket.emit('getpiece')
 
 
@@ -347,7 +359,6 @@ socket.on('takegamedata', (data) => {
   $('#canvas').show()
   console.log('starting')
   bindKeys()
-  document.getElementById('gamewrapper').classList.add('playing')
   gameState.midstart(data)
 })
 
