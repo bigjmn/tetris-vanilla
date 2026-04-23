@@ -14,14 +14,22 @@
   </head>
   <body>
     <nav class='navbar'>
-      <ul>
-        <li class="title"><a href="/">Tetris Buddies</a></li>
+      <div class="nav-brand"><a href="/">Tetris Buddies</a></div>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <ul class="nav-links" id="nav-links">
         <li><a href="/">Home</a></li>
         <li><a href="/leaderboard">Leaderboard</a></li>
         <li><a href="/darules">Da Rules</a></li>
         <li><a href="/about">About</a></li>
       </ul>
     </nav>
+    <script>
+      document.getElementById('hamburger').addEventListener('click', () => {
+        document.getElementById('nav-links').classList.toggle('open')
+      })
+    </script>
 
     {{{body}}}
   </body>

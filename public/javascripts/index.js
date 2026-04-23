@@ -66,6 +66,20 @@ const unbindKeys = () => {
   window.removeEventListener('keydown', handleKey)
 }
 
+const mobileControls = [
+  ['btn-left', 'left'], ['btn-rotate', 'rotate'], ['btn-right', 'right'],
+  ['btn-down', 'down'], ['btn-drop', 'autodrop'],
+]
+mobileControls.forEach(([id, move]) => {
+  const btn = document.getElementById(id)
+  if (!btn) return
+  btn.addEventListener('touchstart', (e) => {
+    e.preventDefault()
+    socket.emit('move', {move})
+  }, {passive: false})
+  btn.addEventListener('click', () => socket.emit('move', {move}))
+})
+
 $('#prevmode').on('click', () => {
   socket.emit('changemode', {type:1})
 })
@@ -215,6 +229,7 @@ const resetgame = () => {
   $('.playercontrols').hide()
   $('.playercontrolmask').hide()
   $('#sendscore').html('Submit Score')
+  document.getElementById('gamewrapper').classList.remove('playing')
   socket.emit('resetlobby')
 
 
@@ -251,6 +266,7 @@ socket.on('prepgame', (data) => {
   $('#canvas').show()
   console.log('starting')
   bindKeys()
+  document.getElementById('gamewrapper').classList.add('playing')
   gameState.upcoming = data.firstpiece
   gameState.start()
 
@@ -331,6 +347,7 @@ socket.on('takegamedata', (data) => {
   $('#canvas').show()
   console.log('starting')
   bindKeys()
+  document.getElementById('gamewrapper').classList.add('playing')
   gameState.midstart(data)
 })
 
