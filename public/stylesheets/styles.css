@@ -1155,7 +1155,9 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .constrain { margin: 16px auto; }
   #myformid { flex-direction: column; align-items: flex-start; gap: 8px; }
   table { font-size: 0.82em; }
-  th, td { padding: 8px 10px; }
+  th { white-space: nowrap; padding: 8px 10px; }
+  td { padding: 8px 10px; }
+  .leaderconstrain form button[type="submit"] { align-self: stretch; }
 }
 
 @media (max-width: 400px) {
