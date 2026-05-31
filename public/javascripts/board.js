@@ -51,20 +51,35 @@ export function Board(can, sfx){
     })
   }
   this.filterboys = function(fullrows, sock){
+    const ctx = this.can.getContext('2d')
     this.board = this.board.reduce(reducer, [])
+    ctx.clearRect(0, 0, this.can.width, this.can.height)
     this.drawSolids()
     sock.emit('pieceset', {linescleared:fullrows.length})
   }
   this.flashrows = function(fullrows, sock){
     this.sfx.soundoff('clear')
-    for (let i=0; i<7; i++){
-      setTimeout(() => {
-        i == 6 ? this.filterboys(fullrows, sock)
-        : i%3 == 0 ? this.turncolor(fullrows, 'white')
-        : i%3 == 1 ? this.turncolor(fullrows, 'black')
-        : this.drawSolids()
-      }, 100+130*i)
+    const ctx = this.can.getContext('2d')
+    const blocksize = this.can.width / 10
+
+    const flashWhite = () => {
+      ctx.fillStyle = '#ffffff'
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)'
+      fullrows.forEach(r => {
+        for (let x = 0; x < 10; x++) {
+          ctx.fillRect(x * blocksize, (r-1) * blocksize, blocksize, blocksize)
+          ctx.strokeRect(x * blocksize, (r-1) * blocksize, blocksize, blocksize)
+        }
+      })
     }
+
+    const ms = 80
+    setTimeout(() => flashWhite(),                    ms * 0)
+    setTimeout(() => this.drawSolids(),               ms * 1)
+    setTimeout(() => flashWhite(),                    ms * 2)
+    setTimeout(() => this.drawSolids(),               ms * 3)
+    setTimeout(() => flashWhite(),                    ms * 4)
+    setTimeout(() => this.filterboys(fullrows, sock), ms * 5)
   }
 
 
