@@ -90,8 +90,26 @@ document.getElementById('nameholder').addEventListener('touchstart', (e) => {
       e.preventDefault()
       socket.emit('move', {move: myControls[move] ? move : 'autodrop'})
     }
+    return
+  }
+  // Drop controls (own card only — always available)
+  const ownTag = document.getElementById(socket.id + 'tag')
+  if (ownTag && ownTag.contains(e.target) && e.target.classList.contains('dropcontrol')) {
+    const move = e.target.dataset.move
+    if (move) {
+      e.preventDefault()
+      socket.emit('move', {move})
+    }
   }
 }, {passive: false})
+
+document.getElementById('nameholder').addEventListener('click', (e) => {
+  if (!gameState.playing) return
+  const ownTag = document.getElementById(socket.id + 'tag')
+  if (ownTag && ownTag.contains(e.target) && e.target.classList.contains('dropcontrol')) {
+    socket.emit('move', {move: e.target.dataset.move})
+  }
+})
 
 $('#prevmode').on('click', () => {
   socket.emit('changemode', {type:1})

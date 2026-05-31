@@ -611,7 +611,41 @@ tbody tr:hover td { background: var(--bg-elevated); }
   text-overflow: ellipsis;
 }
 
-.controltypes { overflow: hidden; }
+.controltypes {
+  display: flex;
+  align-items: stretch;
+}
+
+.controls-left {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.controls-divider {
+  width: 1px;
+  background: var(--border-strong);
+  margin: 1px 5px;
+  flex-shrink: 0;
+}
+
+.controls-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  flex-shrink: 0;
+  width: 28px;
+}
+
+.dropcontrol {
+  text-align: center;
+  color: var(--text-faint);
+  font-size: 14px;
+  line-height: 1.3;
+  width: 100%;
+  letter-spacing: -2px;
+}
 
 .playercontrols { display: none; }
 .playercontrolmask { display: none; }
@@ -1135,6 +1169,23 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .playertag:first-child .control:active {
     opacity: 0.5;
   }
+  .playertag:first-child .controls-right {
+    width: 44px;
+  }
+  .playertag:first-child .controls-divider {
+    margin: 2px 6px;
+  }
+  .playertag:first-child .dropcontrol {
+    font-size: 22px;
+    line-height: 1.8;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    letter-spacing: -4px;
+  }
+  .playertag:first-child .dropcontrol:active {
+    opacity: 0.5;
+  }
 
   /* Other cards: compact, show controls */
   .playertag:not(:first-child) {
@@ -1148,6 +1199,14 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .playertag:not(:first-child) .controlmask {
     font-size: 13px;
     line-height: 1.5;
+  }
+  .playertag:not(:first-child) .controls-right {
+    width: 18px;
+  }
+  .playertag:not(:first-child) .dropcontrol {
+    font-size: 11px;
+    line-height: 1.5;
+    letter-spacing: -1px;
   }
 
   /* Other pages */
@@ -1165,4 +1224,6 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   .nav-brand a { font-size: 0.9em !important; }
   .playertag:first-child .control,
   .playertag:first-child .controlmask { font-size: 22px; line-height: 1.8; }
+  .playertag:first-child .dropcontrol { font-size: 18px; line-height: 1.7; }
+  .playertag:first-child .controls-right { width: 36px; }
 }
