@@ -1,0 +1,124 @@
+
+feature:
+  name: "super-mode"                 # short slug, used in commit msgs / branch names
+  summary: >
+    Add a game option where the team can earn "power-ups" by clearing multiple lines.
+  acceptance:                              # (optional) plain-language "done" checklist
+    - Power-ups are shown on the right (or top) instead of penalties
+    - They can be activated by any player clicking or pressing them, but they are one-use only (per team)
+    - They can only be earned when "Super mode" is enabled.
+
+
+# -----------------------------------------------------------------------------
+# WORKTREE — run this feature in an isolated git worktree (optional).
+# -----------------------------------------------------------------------------
+# Best driven by the `feature-start` wrapper so the session begins INSIDE the
+# worktree. If the command finds itself outside the worktree it will create it
+# and ask you to re-launch (a running session can't relocate its own cwd).
+# Omit this block to work in the current checkout.
+# -----------------------------------------------------------------------------
+worktree:
+  enabled: true
+  branch_prefix: "feature/"                # branch = <branch_prefix><feature.name>
+  # location defaults to a sibling dir: ../<repo>-<feature.name>
+
+# -----------------------------------------------------------------------------
+# SCOPE — the rules of engagement. This is the safety rail.
+# -----------------------------------------------------------------------------
+scope:
+  work_dirs:                               # implement INSIDE these only
+    - ../**
+
+  do_not_modify:                           # hard "hands off", even if it seems helpful
+    - package.json
+    - "firebase/**"
+  allow_create: true                       # may the command add new files? (default true)
+
+# -----------------------------------------------------------------------------
+# CONVENTIONS — pointer to project build conventions (optional).
+# -----------------------------------------------------------------------------
+# Durable, project-wide rules (where components/hooks live, naming, when to add
+
+
+# -----------------------------------------------------------------------------
+# DEFAULTS — inherited by the job and every subtask unless overridden.
+# -----------------------------------------------------------------------------
+defaults:
+  skip_testing: false                      # see TESTING section for the full story
+  constants_target: "src/config/tuning.ts" # where generated constants/toggles land
+  comment_density: normal                  # terse | normal | verbose
+
+
+
+# =============================================================================
+# 3. COLLECTIONS  —  a list of things sharing a shape, each with its own logic.
+# -----------------------------------------------------------------------------
+# `fields` defines the shared shape (the data you fill in per item).
+# `shared_behavior` is the machinery common to every item.
+# Per-item `validation` / `logic` holds the custom bit unique to that entry —
+# write it as plain instructions or paste pseudocode; the command implements it.
+# =============================================================================
+collections:
+  - name: power-ups
+    description: "Power-ups atainnable during play."
+    target: "src/systems/achievements.ts"
+    fields:                                # the shared shape every item must fill
+      - { name: id,     type: string, required: true }
+      - { name: title,  type: string, required: true }
+      - { name: linesNeeded, type: number, default: 0 }
+      - { name: immediateTrigger, type: boolean, default: false}
+      
+    shared_behavior: |
+      When multiple lines are cleared at once, a power-up is randomly selected where linesNeeded is the number of lines cleared. Power-ups of the same type can be accumulated. Anyone on the team can trigger the power-up by clicking or pressing it. Once triggered, it disappears for the team. If immediateTrigger is true, the effect can happen right away. If not, it occurs after the current piece.   
+    items:
+      - id: sneak_peak
+        title: "Sneak Peak"
+        linesNeeded: 2
+        logic: |
+          Instead of previewing the next piece, the next 3 pieces are shown. With each piece, one fewer pieces is previewed - i.e. they don't "backfill" - until the team is previewing jsut one piece again.  
+
+      - id: controlme
+        title: "Control Me"
+        linesNeeded: 3
+        logic: |
+          When a player activates this, they are automatically given all 3 controls for the current piece. These controls are visible to all players regardless of the game version. 
+      - id: bombsaway
+        title: "Bombs Away"
+        linesNeeded: 4
+        logic: |
+          Miniature "bombs" drop in each column, destroying the first block they hit. 
+
+# =============================================================================
+# SUBTASKS  —  optional explicit breakdown. If omitted, the command plans its
+# own. Each subtask inherits `defaults` and can override skip_testing.
+# =============================================================================
+subtasks:
+  - id: supermode-option
+    description: "A toggle on the game menu to turn SUPER MODE on/off, similar to the jump-ins toggle"
+    depends_on: []
+    skip_testing: false
+
+  - id: powerup-management
+    description: "When super mode is enabled, keep a store of the power ups the team has available. Add random ones when the team clears multiple lines. Remove when used."
+    depends_on: [supermode-option]
+    skip_testing: true
+
+  - id: powerupd
+    description: "implement power-up logic when a power-up is triggered."
+    depends_on: [powerup-management]
+    skip_testing: true                     # override
+
+
+# =============================================================================
+# OUTPUT — where the wrap-up summary goes.
+# -----------------------------------------------------------------------------
+# Omit this block to keep the summary in the terminal only. When set, the
+# summary is written to `summary_doc` (with <feature-name> -> feature.name) and
+# the terminal just prints the path. The summary doc is a reporting artifact:
+# the command may write it even outside scope.work_dirs, but never over a path
+# matched by do_not_modify. Written inside the worktree, so it travels with the
+# feature branch — commit it with the feature if you want it in the PR.
+# =============================================================================
+output:
+  summary_doc: "docs/<feature-name>-OUT.md"
+  on_rerun: overwrite                        # overwrite | append (dated section per run)

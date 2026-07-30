@@ -14,4 +14,11 @@ module.exports = function(lobby, socket){
     lobby.jumpins = !lobby.jumpins
     lobby.sendOptions()
   })
+  socket.on('togglesuper', () => {
+    if (lobby.midgame){
+      return
+    }
+    lobby.supermode = !lobby.supermode
+    lobby.sendOptions()
+  })
 }

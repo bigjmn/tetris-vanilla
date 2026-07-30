@@ -89,6 +89,35 @@
 
         </div>
 
+        <div class="modeholder">
+          <h4>Super Mode</h4>
+
+          <div class="modenameholder">
+
+
+
+          <button class='togglesuper' type="button" name="button"><i class="fas fa-angle-left"></i></button>
+          <div class="namefit">
+            <p id='superon' class='supertype'>On</p>
+            <p id='superoff' class='supertype'>Off</p>
+
+          </div>
+
+
+
+          <button class='togglesuper' type="button" name="button"><i class="fas fa-angle-right"></i></button>
+          </div>
+          <div class="superrulesholder">
+
+
+          <p id='superin' class='superrules'>Earn power-ups by clearing multiple lines.</p>
+          <p id='nosuper' class='superrules'>Classic mode - penalties only.</p>
+          </div>
+
+
+
+        </div>
+
         <div class="hostzone">
           <h3 id='waitmessage'>Waiting for the host to start the game</h3>
           <button id='hostbutton' type="button" name="button">Start the game!</button>
@@ -133,6 +162,11 @@
       <div class="statbox" id='penaltiesholder'>
         <p>Penalties</p>
         <h2 id='penalties'>0</h2>
+
+      </div>
+      <div class="statbox" id='powerupsholder'>
+        <p>Power-ups</p>
+        <div id='powerupslist'></div>
 
       </div>
       <div class="statbox" id='soundholder'>

@@ -8,11 +8,17 @@ module.exports = function (lobby, socket){
     }
 
     lobby.linescleared += data.linescleared
+    lobby.addPowerup(data.linescleared)
 
     if (lobby.waiters.length > 0){
       socket.emit('getgamestate')
       return
     }
+    if (lobby.pendingBombs) {
+      lobby.pendingBombs = false
+      lobby.broadcast('bombsaway')
+    }
+
     lobby.shufflecontrols()
     lobby.sendStats()
 
