@@ -11,11 +11,13 @@ module.exports = class Lobby {
     this.dropinterval = null
     this.modeindex = 0
     this.jumpins = true;
+    this.supermode = false;
     this.waiters = []
     this.roomid = roomid
 
     this.roomcode = roomcode
     this.penalties = 0
+    this.powerups = []
 
     this.linescleared = 0
 
@@ -24,6 +26,8 @@ module.exports = class Lobby {
     this.cansubmit = false
 
     this.minplayers = null
+
+    this.pendingBombs = false
 
   }
   get gamemode(){
@@ -80,7 +84,7 @@ module.exports = class Lobby {
     this.broadcast('takecode', {roomcode:this.roomcode, roomname:this.name})
   }
   sendOptions(){
-    this.broadcast('takemode', {mode:this.modeindex, jumpins:this.jumpins})
+    this.broadcast('takemode', {mode:this.modeindex, jumpins:this.jumpins, supermode:this.supermode})
   }
   sendUsers(){
     this.broadcast('takeplayers', {namelist:this.userlist})
@@ -95,6 +99,43 @@ module.exports = class Lobby {
   }
   sendStats(){
     this.broadcast('takestats', {levelstat:this.level, linescleared:this.linescleared, penalties:this.penalties})
+  }
+  sendPowerups(){
+    this.broadcast('takepowerups', {powerups:this.powerups})
+  }
+  addPowerup(linesCleared){
+    if (!this.supermode || linesCleared < 2){
+      return
+    }
+    const powerupTypes = [
+      {id: 'sneak_peak', title: 'Sneak Peak', linesNeeded: 2, immediateTrigger: false},
+      {id: 'controlme', title: 'Control Me', linesNeeded: 3, immediateTrigger: true},
+      {id: 'bombsaway', title: 'Bombs Away', linesNeeded: 4, immediateTrigger: false}
+    ]
+    const eligible = powerupTypes.filter(p => p.linesNeeded === linesCleared)
+    if (eligible.length > 0){
+      const selected = eligible[Math.floor(Math.random() * eligible.length)]
+      this.powerups.push(selected)
+      this.sendPowerups()
+    }
+  }
+  peekPieces(count){
+    const pieces = []
+    for (let i = 0; i < count; i++){
+      this.piecebag = fillbag(this.piecebag)
+      pieces.push(this.piecebag.pop())
+    }
+    return pieces
+  }
+  usePowerup(powerupId){
+    const index = this.powerups.findIndex(p => p.id === powerupId)
+    if (index !== -1){
+      const powerup = this.powerups[index]
+      this.powerups.splice(index, 1)
+      this.sendPowerups()
+      return powerup
+    }
+    return null
   }
   shufflecontrols(){
     newcontrols(this.playerlist)
@@ -140,10 +181,12 @@ module.exports = class Lobby {
   reset(){
     this.linescleared = 0
     this.penalties = 0
+    this.powerups = []
     this.cansubmit = false
     this.minplayers = null
     this.piecebag = []
     this.midgame = false
+    this.pendingBombs = false
     if (this.waiters.length > 0){
       this.waiters.forEach(sock => {
         this.addUser(sock)

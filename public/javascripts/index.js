@@ -4,6 +4,66 @@ import {Board} from './board.js'
 import {maskControls} from './utils.js'
 import {Soundboard} from './makeaudio.js'
 
+const BOMBSPEED = 6 // rows per second
+
+function drawDynamite(ctx, centerX, bottomY, blocksize) {
+  const bw = blocksize * 0.65
+  const bh = blocksize * 0.85
+  const x = centerX - bw / 2
+  const bodyTop = bottomY - bh
+
+  ctx.save()
+
+  // Fuse
+  ctx.beginPath()
+  ctx.strokeStyle = '#7B4F2E'
+  ctx.lineWidth = 1.5
+  ctx.lineCap = 'round'
+  ctx.moveTo(centerX - bw * 0.1, bodyTop)
+  ctx.quadraticCurveTo(
+    centerX + bw * 0.35, bodyTop - bh * 0.15,
+    centerX + bw * 0.3,  bodyTop - bh * 0.4
+  )
+  ctx.stroke()
+
+  // Spark
+  const sparkX = centerX + bw * 0.3
+  const sparkY = bodyTop - bh * 0.4
+  ctx.beginPath()
+  ctx.fillStyle = '#FF6600'
+  ctx.arc(sparkX, sparkY, 2.5, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.fillStyle = '#FFD700'
+  ctx.arc(sparkX, sparkY, 1.2, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Body
+  ctx.fillStyle = '#CC1111'
+  ctx.fillRect(x, bodyTop, bw, bh)
+
+  // Top and bottom caps
+  ctx.fillStyle = '#991111'
+  ctx.fillRect(x, bodyTop,           bw, bh * 0.07)
+  ctx.fillRect(x, bottomY - bh * 0.07, bw, bh * 0.07)
+
+  // Bands
+  ctx.fillStyle = '#444444'
+  ctx.fillRect(x, bodyTop + bh * 0.30, bw, bh * 0.09)
+  ctx.fillRect(x, bodyTop + bh * 0.62, bw, bh * 0.09)
+
+  // Highlight
+  ctx.fillStyle = 'rgba(255,100,100,0.4)'
+  ctx.fillRect(x + bw * 0.08, bodyTop + bh * 0.10, bw * 0.22, bh * 0.78)
+
+  // Outline
+  ctx.strokeStyle = 'rgba(0,0,0,0.6)'
+  ctx.lineWidth = 0.5
+  ctx.strokeRect(x, bodyTop, bw, bh)
+
+  ctx.restore()
+}
+
 console.log('[DEBUG] index.js module executing, connecting to:', window.location.href)
 const socket = io.connect(window.location.href)
 socket.on('connect', () => {
@@ -122,6 +182,10 @@ $('.togglejump').on('click', () => {
   socket.emit('togglejump')
 })
 
+$('.togglesuper').on('click', () => {
+  socket.emit('togglesuper')
+})
+
 socket.on('takecode', (data) => {
   console.log('[DEBUG] takecode received:', data)
   $('#roomcode').text(`Room Code: ${data.roomcode}`)
@@ -134,6 +198,8 @@ socket.on('takemode', (data) => {
   $('.moderules').hide()
   $('.jumptype').hide()
   $('.jumprules').hide()
+  $('.supertype').hide()
+  $('.superrules').hide()
 
   $('#modename'+data.mode.toString()).show()
   $('#moderules'+data.mode.toString()).show()
@@ -145,6 +211,15 @@ socket.on('takemode', (data) => {
   else{
     $('#nojumpin').show()
     $('#jumpoff').show()
+  }
+
+  if (data.supermode){
+    $('#superin').show()
+    $('#superon').show()
+  }
+  else{
+    $('#nosuper').show()
+    $('#superoff').show()
   }
 })
 
@@ -168,6 +243,14 @@ var gameState = {
   board : null,
   piece : null,
   upcoming: null,
+  previewQueue: [],
+  previewExtended: 0,
+  sneakPeakPending: false,
+
+  bombs: [],
+  bombAnimation: null,
+  bombLastTime: null,
+  bombsBlockingPiece: false,
 
   playing : false,
 
@@ -196,19 +279,110 @@ var gameState = {
     if (this.piece){
       this.piece.redraw()
     }
+    if (this.bombs.length > 0) {
+      this.drawBombs()
+    }
+  },
+
+  drawBombs: function() {
+    const blocksize = this.canvas.width / 10
+    this.bombs.forEach(bomb => {
+      if (bomb.exploded) return
+      const centerX = bomb.col * blocksize + blocksize / 2
+      drawDynamite(this.ctx, centerX, bomb.y, blocksize)
+    })
+  },
+
+  startBombs: function() {
+    if (!this.board) return
+    if (this.bombAnimation) {
+      cancelAnimationFrame(this.bombAnimation)
+      this.bombAnimation = null
+    }
+    const blocksize = this.canvas.width / 10
+    const bombH = blocksize * 0.85
+    this.bombs = []
+    for (let col = 0; col < 10; col++) {
+      let targetRow = -1
+      for (let row = 1; row <= 18; row++) {
+        if (this.board.board[row].some(b => b[0] === col)) {
+          targetRow = row
+          break
+        }
+      }
+      if (targetRow === -1) continue
+      this.bombs.push({
+        col,
+        y: -bombH,
+        targetY: (targetRow - 1) * blocksize,
+        targetRow,
+        exploded: false
+      })
+    }
+    if (this.bombs.length === 0) return
+    this.bombLastTime = null
+    this.bombAnimation = requestAnimationFrame((t) => this.tickBombs(t))
+  },
+
+  tickBombs: function(now) {
+    if (!this.board) {
+      this.bombs = []
+      this.bombAnimation = null
+      return
+    }
+    const blocksize = this.canvas.width / 10
+    if (this.bombLastTime === null) this.bombLastTime = now
+    const dt = Math.min((now - this.bombLastTime) / 1000, 0.1)
+    this.bombLastTime = now
+
+    this.bombs.forEach(bomb => {
+      if (bomb.exploded) return
+      bomb.y += BOMBSPEED * blocksize * dt
+      if (bomb.y >= bomb.targetY) {
+        bomb.y = bomb.targetY
+        bomb.exploded = true
+        const idx = this.board.board[bomb.targetRow].findIndex(b => b[0] === bomb.col)
+        if (idx !== -1) this.board.board[bomb.targetRow].splice(idx, 1)
+      }
+    })
+
+    this.update()
+
+    if (this.bombs.some(b => !b.exploded)) {
+      this.bombAnimation = requestAnimationFrame((t) => this.tickBombs(t))
+    } else {
+      this.bombs = []
+      this.update()
+      this.bombAnimation = null
+      if (this.bombsBlockingPiece && this.playing) {
+        this.bombsBlockingPiece = false
+        socket.emit('getpiece')
+      }
+    }
   },
 
   prevdraw: function(){
     this.dtx.clearRect(0,0,150,120)
-    let showpiece = makepreview(this.upcoming)
-    console.log(showpiece)
-    showpiece.prevarray.forEach(sq => {
-      var topleftX = sq[0]*30
-      var topleftY = sq[1]*30
+    const piecesToShow = this.previewExtended > 0 ?
+      [this.upcoming, ...this.previewQueue.slice(0, this.previewExtended - 1)] :
+      [this.upcoming]
 
-      this.dtx.fillStyle = showpiece.prevcolor
-      this.dtx.fillRect(topleftX, topleftY, 30,30)
-      this.dtx.strokeRect(topleftX, topleftY, 30,30)
+    const n = piecesToShow.length
+    const blocksize = Math.min(30, Math.floor(120 / (n * 2.5)))
+    const slotHeight = Math.floor(120 / n)
+
+    piecesToShow.forEach((pieceType, idx) => {
+      let showpiece = makepreview(pieceType)
+      if (!showpiece) return
+      const yOffset = idx * slotHeight
+      showpiece.prevarray.forEach(sq => {
+        var topleftX = sq[0] * blocksize
+        var topleftY = sq[1] * blocksize + yOffset
+
+        this.dtx.fillStyle = showpiece.prevcolor
+        this.dtx.fillRect(topleftX, topleftY, blocksize, blocksize)
+        this.dtx.strokeRect(topleftX, topleftY, blocksize, blocksize)
+      })
     })
   },
   sounds: new Soundboard(),
@@ -219,9 +393,23 @@ var gameState = {
   createpiece : function(x){
     let i = this.upcoming
 
-
     this.piece = makepiece(i, this.canvas)
-    this.upcoming = x
+
+    if (this.sneakPeakPending) {
+      this.sneakPeakPending = false
+      this.previewExtended = 3
+      this.previewQueue.push(x)
+      this.upcoming = this.previewQueue.shift()
+      // no decrement — first piece of extended preview, show full 3
+    } else if (this.previewExtended > 0) {
+      this.previewQueue.push(x)
+      this.upcoming = this.previewQueue.shift()
+      this.previewExtended--
+    } else {
+      this.upcoming = x
+      this.previewQueue = []
+    }
+
     this.prevdraw()
 
   },
@@ -235,6 +423,16 @@ var gameState = {
     }
     this.piece = null
     this.upcoming = null
+    this.previewQueue = []
+    this.previewExtended = 0
+    this.sneakPeakPending = false
+    if (this.bombAnimation) {
+      cancelAnimationFrame(this.bombAnimation)
+      this.bombAnimation = null
+    }
+    this.bombs = []
+    this.bombLastTime = null
+    this.bombsBlockingPiece = false
     this.board = null
     if (this.dtx){
       this.dtx.clearRect(0,0,150,120)
@@ -254,6 +452,7 @@ const resetgame = () => {
   $('#levelstat').text(1)
   $('#penalties').text(0)
   $('#linescleared').text(0)
+  $('#powerupslist').empty()
   $('.centerlayer').hide()
   $('#canvas').hide()
   $('#optionsholder').show()
@@ -357,8 +556,11 @@ socket.on('takeControls', (data) => {
     myControls.rotate = !!myInfo[1].rotate
     myControls.right = !!myInfo[1].right
   }
-  socket.emit('getpiece')
-
+  if (gameState.bombs.length > 0) {
+    gameState.bombsBlockingPiece = true
+  } else {
+    socket.emit('getpiece')
+  }
 
 })
 
@@ -367,6 +569,67 @@ socket.on('takestats', (data) => {
   $('#penalties').text(data.penalties)
   $('#linescleared').text(data.linescleared)
 })
+
+socket.on('takepowerups', (data) => {
+  const powerupsList = $('#powerupslist')
+  powerupsList.empty()
+  data.powerups.forEach((powerup, index) => {
+    const powerupBtn = $('<button>')
+      .addClass('powerup-btn')
+      .attr('data-powerup-id', powerup.id)
+      .attr('data-powerup-index', index)
+      .text(powerup.title)
+      .on('click', function() {
+        if (gameState.playing) {
+          socket.emit('triggerpowerup', {powerupId: powerup.id})
+        }
+      })
+    powerupsList.append(powerupBtn)
+  })
+})
+
+socket.on('powerupactivated', (data) => {
+  const powerup = data.powerup
+  if (powerup.id === 'sneak_peak') {
+    gameState.sneakPeakPending = true
+  }
+})
+
+socket.on('peekpieces', (data) => {
+  data.pieces.forEach(p => gameState.previewQueue.push(p))
+  gameState.prevdraw()
+})
+
+socket.on('controlsUpdated', (data) => {
+  $('.control').css('visibility', 'hidden')
+  const infos = data.info
+  infos.forEach((item) => {
+    ;['left', 'rotate', 'right'].forEach((control) => {
+      if (item[1][control]) {
+        $('#' + item[0] + control).css('visibility', 'visible')
+      }
+    })
+  })
+  const myInfo = infos.find(item => item[0] === socket.id)
+  if (myInfo) {
+    myControls.left = !!myInfo[1].left
+    myControls.rotate = !!myInfo[1].rotate
+    myControls.right = !!myInfo[1].right
+  }
+})
+
+socket.on('bombsaway', () => {
+  if (!gameState.board) return
+  gameState.startBombs()
+})
+
+if (window.location.hostname === 'localhost') {
+  window.addEventListener('keydown', (e) => {
+    if (!gameState.playing) return
+    const devMap = {b: 'bombsaway', s: 'sneak_peak', c: 'controlme'}
+    if (devMap[e.key]) socket.emit('devpowerup', {powerupId: devMap[e.key]})
+  })
+}
 
 socket.on('getgamestate', () => {
   socket.emit('takestate', {boardstate:gameState.board.board, ondeck:gameState.upcoming})

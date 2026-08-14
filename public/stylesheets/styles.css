@@ -777,8 +777,15 @@ tbody tr:hover td { background: var(--bg-elevated); }
   font-weight: 600;
   color: var(--text-primary);
 }
+.supertype {
+  display: none;
+  font-family: var(--font-display);
+  font-size: 1em;
+  font-weight: 600;
+  color: var(--text-primary);
+}
 
-.modeswitch, .togglejump {
+.modeswitch, .togglejump, .togglesuper {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -792,13 +799,13 @@ tbody tr:hover td { background: var(--bg-elevated); }
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
-.modeswitch:hover, .togglejump:hover {
+.modeswitch:hover, .togglejump:hover, .togglesuper:hover {
   background: var(--accent-dim);
   color: var(--accent);
   border-color: var(--accent);
 }
 
-.moderulesholder, .jumprulesholder {
+.moderulesholder, .jumprulesholder, .superrulesholder {
   display: block;
   min-height: 36px;
   text-align: center;
@@ -806,7 +813,8 @@ tbody tr:hover td { background: var(--bg-elevated); }
 }
 .moderules { display: none; }
 .jumprules { display: none; }
-.moderules, .jumprules {
+.superrules { display: none; }
+.moderules, .jumprules, .superrules {
   font-size: 0.8em;
   color: var(--text-muted);
   text-align: center;
@@ -951,6 +959,44 @@ tbody tr:hover td { background: var(--bg-elevated); }
   margin-top: 4px;
 }
 #mutebutton:hover { color: var(--text-primary); }
+
+#powerupsholder {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+#powerupslist {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.powerup-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.powerup-btn:hover {
+  background: var(--accent-hover);
+}
+
+.powerup-btn:active {
+  transform: scale(0.95);
+}
 
 /* ================================================
    UTILITIES / HIDDEN ELEMENTS
@@ -1143,6 +1189,16 @@ input[type=number] { -moz-appearance: textfield; appearance: textfield; }
   }
   #mutebutton { font-size: 1.1em; padding: 0; margin: 0; }
   #mutebutton i { font-size: 1em !important; }
+
+  #powerupsholder {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .powerup-btn {
+    font-size: 0.6em;
+    padding: 4px 6px;
+  }
 
   /* Name cards: grid — own card full-width row, others fill 2 columns */
   #nameholder {
